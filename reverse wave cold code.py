@@ -49,7 +49,10 @@ while current_temperature > target_temperature:
     print(f"動作周波数: {current_frequency/1e9:.2f} GHz, 温度: {current_temperature:.2f} ℃, 温度変化: {temperature_change:.2f} ℃")
     
     # 終了条件チェック
-    if temperature_change == 0:
+    # 修正(2026-10-29): 逆位相の干渉は恒等的にほぼ0で、温度変化は浮動小数点誤差の
+    # レベル (~1e-16) にしかならないため、== 0 の判定では永遠に終了しなかった。
+    # 無視できる大きさなら「冷却効果なし」として終了する
+    if abs(temperature_change) < 1e-9:
         break  # 冷却効果がない場合はループを終了
     
     # 適切なシミュレーション速度を保つためのスリープ（オプション）
